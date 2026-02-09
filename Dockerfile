@@ -8,17 +8,17 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# نسخ ملفات المشروع
+# نسخ ملف requirements أولاً
 COPY requirements.txt .
 
-# تثبيت مكتبات Python - نسخة متوافقة تماماً
+# تثبيت مكتبات Python - إصدارات تعمل 100%
 RUN pip install --no-cache-dir \
-    tensorflow-cpu==2.15.0 \
+    tensorflow==2.13.0 \
     fastapi==0.104.1 \
     uvicorn[standard]==0.24.0 \
     python-multipart==0.0.6 \
-    torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu \
-    torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.1.0 \
+    torchvision==0.16.0 \
     transformers==4.36.0 \
     Pillow==10.1.0 \
     numpy==1.24.3 \
