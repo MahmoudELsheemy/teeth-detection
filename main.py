@@ -10,6 +10,8 @@ from tensorflow.keras.applications.efficientnet import preprocess_input  # type:
 # HuggingFace
 from transformers import pipeline
 import torch
+import gdown
+
 
 # ============================================================
 # CONFIGURATION
@@ -30,13 +32,36 @@ os.environ['CUDA_VISIBLE_DEVICES'] = '-1'  # Disable GPU completely
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-BINARY_MODEL_PATH = os.path.join(BASE_DIR, "models", "model_2.keras")  # ⬅️ models/
-DISEASE_MODEL_PATH = os.path.join(BASE_DIR, "models", "LAST_model_efficient.h5")  # ⬅️ models/ و efficient
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MODELS_DIR = os.path.join(BASE_DIR, "models")
+os.makedirs(MODELS_DIR, exist_ok=True)
 
+BINARY_MODEL_PATH = os.path.join(MODELS_DIR, "model_2.keras")
+DISEASE_MODEL_PATH = os.path.join(MODELS_DIR, "LAST_model_efficient.h5")
 
+# تحقق من وجود الموديلات، لو مش موجودة حملهم
+def ensure_models():
+    if not os.path.exists(BINARY_MODEL_PATH):
+        print("📥 جاري تنزيل الموديل الثنائي...")
+        gdown.download('https://drive.google.com/uc?id=1--o19x7wPyCu5rQBfxIhH3gYUJwwQNXA', 
+                      BINARY_MODEL_PATH, quiet=False)
+    
+    if not os.path.exists(DISEASE_MODEL_PATH):
+        print("📥 جاري تنزيل موديل الأمراض...")
+        gdown.download('https://drive.google.com/uc?id=1JAcY_T_x16OHNUj-XKSjUMEUuepB1IFY', 
+                      DISEASE_MODEL_PATH, quiet=False)
 
-print(os.path.exists(BINARY_MODEL_PATH))
-print(os.path.isfile(BINARY_MODEL_PATH))
+# استدعاء الدالة قبل تحميل الموديلات
+ensure_models()
+
+print(f"✅ الموديل الثنائي: {os.path.exists(BINARY_MODEL_PATH)}")
+print(f"✅ موديل الأمراض: {os.path.exists(DISEASE_MODEL_PATH)}")
+
+# الآن حمل الموديلات
+print("[INFO] Loading TensorFlow models...")
+BINARY_MODEL = tf.keras.models.load_model(BINARY_MODEL_PATH)
+DISEASE_MODEL = tf.keras.models.load_model(DISEASE_MODEL_PATH)
+
 
 
 # HuggingFace Teeth Health Model
@@ -80,9 +105,9 @@ print("isfile:", os.path.isfile(BINARY_MODEL_PATH))
 # ============================================================
 # MODEL LOADING
 # ============================================================
-print("[INFO] Loading TensorFlow models...")
-BINARY_MODEL = tf.keras.models.load_model(BINARY_MODEL_PATH)
-DISEASE_MODEL = tf.keras.models.load_model(DISEASE_MODEL_PATH)
+#print("[INFO] Loading TensorFlow models...")
+#BINARY_MODEL = tf.keras.models.load_model(BINARY_MODEL_PATH)
+#DISEASE_MODEL = tf.keras.models.load_model(DISEASE_MODEL_PATH)
 
 
 print("[INFO] Loading HuggingFace Teeth Health model...")
