@@ -78,6 +78,11 @@ DISEASE_MODEL = tf.keras.models.load_model(
 )
 print("✅ Models loaded successfully!")
 
+BINARY_MODEL.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
+DISEASE_MODEL.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
+print("✅ Models compiled successfully!")
+
+
 
 
 
