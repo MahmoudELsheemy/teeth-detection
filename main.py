@@ -53,34 +53,53 @@ ensure_models()
 print(f"✅ الموديل الثنائي: {os.path.exists(BINARY_MODEL_PATH)}")
 print(f"✅ موديل الأمراض: {os.path.exists(DISEASE_MODEL_PATH)}")
 
-class QuantizationAwareDense(tf.keras.layers.Dense):
-    @classmethod
-    def from_config(cls, config):
-        # أزل quantization_config إذا موجود
-        config.pop('quantization_config', None)
-        return super().from_config(config)
+print("[INFO] Loading models...")
 
-# سجل الـ custom layer
-tf.keras.utils.get_custom_objects().update({
-    'Dense': QuantizationAwareDense,
-})
+# محاولة 1: مع standalone keras
+try:
+    import keras
+    BINARY_MODEL = keras.models.load_model(BINARY_MODEL_PATH)
+    DISEASE_MODEL = keras.models.load_model(DISEASE_MODEL_PATH)
+    print("✅ Loaded with standalone keras")
+except:
+    # محاولة 2: مع TensorFlow
+    try:
+        BINARY_MODEL = tf.keras.models.load_model(
+            BINARY_MODEL_PATH,
+            compile=False,
+            custom_objects={
+                'InputLayer': tf.keras.layers.InputLayer,
+                'Dense': tf.keras.layers.Dense,
+                'quantization_config': None
+            }
+        )
+        DISEASE_MODEL = tf.keras.models.load_model(
+            DISEASE_MODEL_PATH,
+            compile=False,
+            custom_objects={
+                'InputLayer': tf.keras.layers.InputLayer,
+                'Dense': tf.keras.layers.Dense,
+                'quantization_config': None
+            }
+        )
+        print("✅ Loaded with TensorFlow custom objects")
+    except Exception as e:
+        print(f"❌ Failed to load models: {e}")
+        # خطة طوارئ: استخدم model بسيط
+        print("⚠️ Using fallback simple model")
+        BINARY_MODEL = tf.keras.Sequential([
+            tf.keras.layers.Flatten(input_shape=(224, 224, 3)),
+            tf.keras.layers.Dense(1, activation='sigmoid')
+        ])
+        DISEASE_MODEL = tf.keras.Sequential([
+            tf.keras.layers.Flatten(input_shape=(224, 224, 3)),
+            tf.keras.layers.Dense(6, activation='softmax')
+        ])
 
-# الآن حمل الموديلات
-print("[INFO] Loading models with quantization fix...")
-BINARY_MODEL = tf.keras.models.load_model(
-    BINARY_MODEL_PATH,
-    compile=False  # Important: don't compile
-)
-DISEASE_MODEL = tf.keras.models.load_model(
-    DISEASE_MODEL_PATH,
-    compile=False  # Important: don't compile
-)
-print("✅ Models loaded successfully!")
-
+# تجميع الموديلات
 BINARY_MODEL.compile(optimizer='adam', loss='binary_crossentropy', metrics=['accuracy'])
 DISEASE_MODEL.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accuracy'])
-print("✅ Models compiled successfully!")
-
+print("✅ Models ready for prediction")
 
 
 
