@@ -2,27 +2,31 @@ FROM python:3.10-slim
 
 WORKDIR /app
 
-# تثبيت متطلبات نظامية خفيفة
+# تثبيت المتطلبات النظامية
 RUN apt-get update && apt-get install -y wget curl && rm -rf /var/lib/apt/lists/*
 
-# نثبت الإصدارات اللي اتدربت عليها (ثبّت Keras/TF المطابقة للموديل)
+# نسخ ملفات المشروع
 COPY requirements.txt .
-# ضع في requirements.txt:
-# tensorflow==2.19.0
-# keras==3.10.0
-# fastapi==0.104.1
-# uvicorn[standard]==0.24.0
-# python-multipart==0.0.6
-# torch==2.1.0
-# torchvision==0.16.0
-# transformers==4.36.0
-# Pillow==10.1.0
-# numpy==1.24.3
-# gdown==5.1.0
+COPY . .
 
+# تثبيت المكتبات
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY . .
+# تنزيل الموديلات من Google Drive
+RUN python -c "
+import gdown
+import os
+
+os.makedirs('models', exist_ok=True)
+
+# رابط model_2.keras
+gdown.download('https://drive.google.com/uc?id=1--o19x7wPyCu5rQBfxIhH3gYUJwwQNXA', 'models/model_2.keras', quiet=False)
+
+# رابط LAST_model_efficient.h5  
+gdown.download('https://drive.google.com/uc?id=1JAcY_T_x16OHNUj-XKSjUMEUuepB1IFY', 'models/LAST_model_efficient.h5', quiet=False)
+
+print('✅ تم تنزيل الموديلات بنجاح')
+"
 
 EXPOSE 10000
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
