@@ -63,7 +63,6 @@ class QuantizationAwareDense(tf.keras.layers.Dense):
 # سجل الـ custom layer
 tf.keras.utils.get_custom_objects().update({
     'Dense': QuantizationAwareDense,
-    'DTypePolicy': tf.keras.mixed_precision.DTypePolicy
 })
 
 # الآن حمل الموديلات
