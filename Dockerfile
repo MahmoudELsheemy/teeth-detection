@@ -2,7 +2,7 @@ FROM python:3.9-slim
 
 WORKDIR /app
 
-# تثبيت المتطلبات النظامية الأساسية فقط
+# تثبيت المتطلبات النظامية
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
@@ -11,20 +11,18 @@ RUN apt-get update && apt-get install -y \
 # نسخ ملفات المشروع
 COPY requirements.txt .
 
-# تثبيت مكتبات Python
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir \
-    tensorflow==2.15.0 \
+# تثبيت مكتبات Python - نسخة متوافقة تماماً
+RUN pip install --no-cache-dir \
+    tensorflow-cpu==2.15.0 \
     fastapi==0.104.1 \
     uvicorn[standard]==0.24.0 \
     python-multipart==0.0.6 \
-    torch==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu \
+    torchvision==0.16.0 --index-url https://download.pytorch.org/whl/cpu \
     transformers==4.36.0 \
     Pillow==10.1.0 \
-    numpy==1.26.0 \
-    gdown==5.1.0 \
-    typing-extensions==4.8.0
-
+    numpy==1.24.3 \
+    gdown==5.1.0
 
 # نسخ باقي الملفات
 COPY . .
@@ -45,5 +43,3 @@ EXPOSE 10000
 
 # تشغيل التطبيق
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
-
-
