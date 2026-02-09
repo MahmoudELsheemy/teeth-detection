@@ -1,4 +1,3 @@
-# Dockerfile
 FROM python:3.10-slim
 
 WORKDIR /app
@@ -7,25 +6,28 @@ WORKDIR /app
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
+    libgl1-mesa-glx \
+    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
 
 # نسخ ملفات المشروع
-COPY . .
+COPY requirements.txt .
 
 # تثبيت مكتبات Python
 RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir \
-    tensorflow==2.20.0 \
-    keras==3.12.0 \
+    tensorflow==2.15.0 \
     fastapi==0.104.1 \
     uvicorn[standard]==0.24.0 \
     python-multipart==0.0.6 \
-    torch==2.1.0 --index-url https://download.pytorch.org/whl/cpu \
+    torch==2.3.1 torchvision==0.18.1 --index-url https://download.pytorch.org/whl/cpu \
     transformers==4.36.0 \
     Pillow==10.1.0 \
     numpy==1.26.0 \
-    gdown==5.1.0 \
-    typing-extensions==4.8.0
+    gdown==5.1.0
+
+# نسخ باقي الملفات
+COPY . .
 
 # تنزيل الموديلات من Google Drive
 RUN mkdir -p models && \
