@@ -1,15 +1,12 @@
-FROM python:3.10-slim
+FROM python:3.9-slim
 
 WORKDIR /app
 
-# تثبيت المتطلبات النظامية
+# تثبيت المتطلبات النظامية الأساسية فقط
 RUN apt-get update && apt-get install -y \
     wget \
     curl \
-    libgl1 \
-    libglib2.0-0 \
     && rm -rf /var/lib/apt/lists/*
-
 
 # نسخ ملفات المشروع
 COPY requirements.txt .
@@ -25,7 +22,9 @@ RUN pip install --no-cache-dir --upgrade pip && \
     transformers==4.36.0 \
     Pillow==10.1.0 \
     numpy==1.26.0 \
-    gdown==5.1.0
+    gdown==5.1.0 \
+    typing-extensions==4.8.0
+
 
 # نسخ باقي الملفات
 COPY . .
@@ -46,4 +45,5 @@ EXPOSE 10000
 
 # تشغيل التطبيق
 CMD ["uvicorn", "main:app", "--host", "0.0.0.0", "--port", "10000"]
+
 
