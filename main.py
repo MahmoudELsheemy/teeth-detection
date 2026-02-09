@@ -6,6 +6,7 @@ from io import BytesIO
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.applications.efficientnet import preprocess_input  # type: ignore
+import keras
 
 # HuggingFace
 from transformers import pipeline
@@ -17,10 +18,7 @@ import gdown
 # CONFIGURATION
 # ============================================================
 IMAGE_SIZE = 224
-import tensorflow as tf, keras, sys
-print("Python:", sys.version)
-print("TF:", tf.__version__)
-print("Keras:", keras.__version__)
+
 
 # Local TensorFlow models
 # #BINARY_MODEL_PATH = r"D:\Colab-python\teethDises\new\api\model_2.keras"
@@ -58,9 +56,8 @@ print(f"✅ الموديل الثنائي: {os.path.exists(BINARY_MODEL_PATH)}")
 print(f"✅ موديل الأمراض: {os.path.exists(DISEASE_MODEL_PATH)}")
 
 # الآن حمل الموديلات
-print("[INFO] Loading TensorFlow models...")
-BINARY_MODEL = tf.keras.models.load_model(BINARY_MODEL_PATH)
-DISEASE_MODEL = tf.keras.models.load_model(DISEASE_MODEL_PATH)
+BINARY_MODEL = keras.models.load_model(BINARY_MODEL_PATH)
+DISEASE_MODEL = keras.models.load_model(DISEASE_MODEL_PATH)
 
 
 
@@ -98,7 +95,6 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-import os
 print("exists:", os.path.exists(BINARY_MODEL_PATH))
 print("isfile:", os.path.isfile(BINARY_MODEL_PATH))
 
