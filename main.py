@@ -6,8 +6,6 @@ from io import BytesIO
 from PIL import Image
 import tensorflow as tf
 from tensorflow.keras.applications.efficientnet import preprocess_input  # type: ignore
-import keras
-
 # HuggingFace
 from transformers import pipeline
 import torch
@@ -56,8 +54,15 @@ print(f"✅ الموديل الثنائي: {os.path.exists(BINARY_MODEL_PATH)}")
 print(f"✅ موديل الأمراض: {os.path.exists(DISEASE_MODEL_PATH)}")
 
 # الآن حمل الموديلات
-BINARY_MODEL = keras.models.load_model(BINARY_MODEL_PATH)
-DISEASE_MODEL = keras.models.load_model(DISEASE_MODEL_PATH)
+BINARY_MODEL = tf.keras.models.load_model(
+    BINARY_MODEL_PATH,
+    custom_objects={'quantization_config': None, 'DTypePolicy': None}
+)
+DISEASE_MODEL = tf.keras.models.load_model(
+    DISEASE_MODEL_PATH,
+    custom_objects={'quantization_config': None, 'DTypePolicy': None}
+)
+
 
 
 
