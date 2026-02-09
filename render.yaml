@@ -1,34 +1,11 @@
+# render.yaml
 services:
   - type: web
     name: teeth-detection-api
-    env: python
-    region: frankfurt
+    dockerfilePath: ./Dockerfile
     plan: free
-    branch: main
-    buildCommand: |
-      pip install --upgrade pip
-      pip install -r requirements.txt
-      
-      # إنشاء مجلد الموديلات
-      mkdir -p models
-      
-      echo "Downloading model_2.keras..."
-      # استخدام ملف كوكيز مؤقت لتجاوز صفحة تحذير Google للملفات الكبيرة
-      wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate "https://drive.google.com/uc?export=download&id=1--o19x7wPyCu5rQBfxIhH3gYUJwwQNXA" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p' > /tmp/confirm.txt
-      wget --load-cookies /tmp/cookies.txt -O models/model_2.keras "https://drive.google.com/uc?export=download&confirm=$(cat /tmp/confirm.txt)&id=1--o19x7wPyCu5rQBfxIhH3gYUJwwQNXA" && rm -rf /tmp/cookies.txt /tmp/confirm.txt
-      
-      echo "Downloading LAST_model_efficent.h5..."
-      # نفس الأمر للملف الكبير
-      wget --quiet --save-cookies /tmp/cookies.txt --keep-session-cookies --no-check-certificate "https://drive.google.com/uc?export=download&id=1JAcY_T_x16OHNUj-XKSjUMEUuepB1IFY" -O- | sed -rn 's/.*confirm=([0-9A-Za-z_]+).*/\1\n/p' > /tmp/confirm.txt
-      wget --load-cookies /tmp/cookies.txt -O models/LAST_model_efficent.h5 "https://drive.google.com/uc?export=download&confirm=$(cat /tmp/confirm.txt)&id=1JAcY_T_x16OHNUj-XKSjUMEUuepB1IFY" && rm -rf /tmp/cookies.txt /tmp/confirm.txt
-      
-      echo "✅ All models downloaded successfully."
-    startCommand: gunicorn main:app --bind 0.0.0.0:$PORT --workers 2 --timeout 120
+    region: frankfurt
+    autoDeploy: true
     envVars:
       - key: PORT
         value: 10000
-      - key: PYTHON_VERSION
-        value: 3.9.18
-      - key: ALLOWED_ORIGINS
-        value: "*"
-    autoDeploy: true
