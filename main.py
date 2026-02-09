@@ -53,15 +53,30 @@ ensure_models()
 print(f"✅ الموديل الثنائي: {os.path.exists(BINARY_MODEL_PATH)}")
 print(f"✅ موديل الأمراض: {os.path.exists(DISEASE_MODEL_PATH)}")
 
+class QuantizationAwareDense(tf.keras.layers.Dense):
+    @classmethod
+    def from_config(cls, config):
+        # أزل quantization_config إذا موجود
+        config.pop('quantization_config', None)
+        return super().from_config(config)
+
+# سجل الـ custom layer
+tf.keras.utils.get_custom_objects().update({
+    'Dense': QuantizationAwareDense,
+    'DTypePolicy': tf.keras.mixed_precision.DTypePolicy
+})
+
 # الآن حمل الموديلات
+print("[INFO] Loading models with quantization fix...")
 BINARY_MODEL = tf.keras.models.load_model(
     BINARY_MODEL_PATH,
-    custom_objects={'quantization_config': None, 'DTypePolicy': None}
+    compile=False  # Important: don't compile
 )
 DISEASE_MODEL = tf.keras.models.load_model(
     DISEASE_MODEL_PATH,
-    custom_objects={'quantization_config': None, 'DTypePolicy': None}
+    compile=False  # Important: don't compile
 )
+print("✅ Models loaded successfully!")
 
 
 
