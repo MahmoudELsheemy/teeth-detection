@@ -1,0 +1,24 @@
+# .dockerignore
+__pycache__/
+*.pyc
+venv/
+env/
+.venv/
+.vscode/
+.idea/
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+.git/
+.gitignore
+README.md
+*.log
+Dockerfile
+docker-compose.yml
+.dockerignore
+test.ipynb
+main_backup_*.py
+models/
+*.keras
+*.h5
